@@ -46,14 +46,15 @@ res1,res2=224,224
 PATHx_save=model_path+"/model_supbs"+str(bs)+"unsup"+str(bs)+"_bbbc22_5CJ_semisupcon.pt"
 outfile=emb_path+"/emb"+PATHx_save.split("/")[-1][5:-3]+".csv"
 logfile="log"+PATHx_save.split("/")[-1][5:-3]
-if nr_gpus==0:
-    cpu=False
-else:
-    gpus=list(range(nr_gpus))
 
-device = torch.device('cuda:'+str(gpus[0]) if torch.cuda.is_available() else 'cpu')
-if cpu:
+cpu = nr_gpus == 0
+gpus = list(range(nr_gpus)) if nr_gpus > 0 else []
+
+if not cpu and torch.cuda.is_available():
+    device = torch.device(f'cuda:{gpus[0]}')
+else:
     device = torch.device('cpu')
+    cpu = True
 
 random.seed(4)
 torch.manual_seed(4)
